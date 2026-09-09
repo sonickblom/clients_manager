@@ -3,24 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZPersonal Manager</title>
+<title>Clients Manager</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="telaPin">
   <div class="form">
-    <h2>ZPersonal Manager</h2>
-    <label>PIN de acesso</label>
-    <input type="password" id="pinInput" placeholder="Digite ou crie seu PIN">
-    <br><br><button onclick="entrar()">Entrar</button>
+    <h2>Clients Manager</h2>
+    <div id="grupoEscolhaUsuario" style="display:none;">
+      <label>Acesso rápido</label>
+      <select id="escolhaUsuario" onchange="document.getElementById('loginUsuario').value = this.value"></select>
+    </div>
+    <label>Usuário</label>
+    <input id="loginUsuario" placeholder="Digite seu usuário" autocomplete="username">
+    <label>Senha</label>
+    <input type="password" id="pinInput" placeholder="Digite sua senha" autocomplete="current-password">
+    <label class="check-linha"><input type="checkbox" id="verSenhaLogin" onclick="document.getElementById('pinInput').type = this.checked ? 'text' : 'password'"> Ver senha</label>
+    <br><button onclick="entrar()">Entrar</button>
   </div>
 </div>
 
 <header>
-  <h1>ZPersonal Manager</h1>
+  <h1>Clients Manager</h1>
   <button class="sec" onclick="exportarBackup(db)">Backup</button>
   <button class="sec" onclick="document.getElementById('impBackup').click()">Restaurar</button>
   <input type="file" id="impBackup" accept=".json" hidden>
+  <div class="menu-wrap">
+    <button class="sec menu-btn" onclick="toggleMenu(event)" title="Menu">⋯</button>
+    <div class="dropdown" id="dropdown" style="display:none;">
+      <button id="btnUsuarios" onclick="abrirModalUsuarios()">Usuários</button>
+      <button onclick="abrirModalSenha()">Senha (ver / mudar)</button>
+      <button onclick="mudarTema()"><span id="icoTema">🌙</span> Tema: <span id="lblTema">Escuro</span></button>
+      <button onclick="logout()">Deslogar</button>
+    </div>
+  </div>
 </header>
 
 <main>
@@ -60,6 +76,16 @@
       <select id="filtroMatricula">
         <option value="">Todas matrículas</option>
         <option>Aguardando</option><option>Válido</option><option>Cancelado</option>
+      </select>
+      <select id="filtroRecentes">
+        <option value="">Qualquer data</option>
+        <option value="7">Adicionados há 7 dias</option>
+        <option value="30">Adicionados há 30 dias</option>
+      </select>
+      <select id="filtroInscricao">
+        <option value="">Todas as inscrições</option>
+        <option value="completa">Completa</option>
+        <option value="incompleta">Faltando dados</option>
       </select>
     </div>
     <div class="toolbar" style="margin-bottom:0;">
@@ -122,6 +148,43 @@
   <hr><label>Ou enviar arquivo CSV</label>
   <input type="file" id="impCSV" accept=".csv">
   <br><br><button class="sec" onclick="fecharModal('modalImp')">Fechar</button>
+</div></div>
+
+<div class="modal" id="modalSenha"><div class="form">
+  <h3>Senha de acesso</h3>
+  <label>Senha atual (caso tenha esquecido)</label>
+  <div class="linha">
+    <input type="password" id="senhaAtual" readonly>
+    <button class="sec" onclick="toggleOlho('senhaAtual')">👁</button>
+  </div>
+  <label>Nova senha (4+ dígitos)</label><input type="password" id="novaSenha">
+  <label>Confirmar nova senha</label><input type="password" id="novaSenha2">
+  <br><br>
+  <button onclick="salvarSenha()">Salvar nova senha</button>
+  <button class="sec" onclick="fecharModal('modalSenha')">Fechar</button>
+</div></div>
+
+<div class="modal" id="modalUsuarios"><div class="form">
+  <h3>Usuários</h3>
+  <p style="color:var(--mut);">Logado como: <b id="quemLogado" style="color:var(--txt);"></b></p>
+  <div id="listaUsuarios"></div>
+  <hr style="border-color:var(--line);">
+  <label>Novo usuário</label><input id="novoUserNome" placeholder="Ex: secretaria">
+  <label>Senha (4+ dígitos)</label><input type="password" id="novoUserSenha" placeholder="Senha do novo usuário">
+  <br><br>
+  <div class="linha">
+    <button onclick="adicionarUsuario()">Adicionar</button>
+    <button class="sec" onclick="fecharModal('modalUsuarios')">Fechar</button>
+  </div>
+</div></div>
+
+<div class="modal" id="modalConfirm"><div class="form" style="width:360px;">
+  <h3>Confirmação</h3>
+  <p id="confirmMsg" style="margin:12px 0;"></p>
+  <div class="linha">
+    <button class="danger" onclick="cliqueSim()">Sim</button>
+    <button class="sec" onclick="cliqueNao()">Não</button>
+  </div>
 </div></div>
 
 <script src="status.js"></script>

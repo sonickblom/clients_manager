@@ -1,4 +1,3 @@
-// Importa CSV exportado do Google Planilhas ("Respostas ao formulário 1")
 function norm(s) {
   return (s || "").toLowerCase().normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9 ]/g, " ")
@@ -47,16 +46,15 @@ function dataBRparaISO(br) {
   return `${aa}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
 }
 
-// Uma linha do Forms -> objeto de aluno
 function rowToAluno(row) {
   const chaves = Object.keys(row);
   const nk = {};
   chaves.forEach((k) => { nk[k] = norm(k); });
 
-  // 1ª coluna de NOME = aluno; 2ª (se houver) = responsável
   const chavesNome = chaves.filter((k) =>
     nk[k].includes("nome") && !nk[k].includes("responsavel") &&
-    !nk[k].includes("municipio") && !nk[k].includes("escola") && !nk[k].includes("mae") && !nk[k].includes("pai"));
+    !nk[k].includes("municipio") && !nk[k].includes("escola") &&
+    !nk[k].includes("mae") && !nk[k].includes("pai"));
   const nomeAluno = chavesNome.length ? row[chavesNome[0]] : "";
   const nomeResp = chavesNome.length > 1 ? row[chavesNome[1]] : "";
 
@@ -71,7 +69,7 @@ function rowToAluno(row) {
   return {
     nome: nomeAluno,
     nascimento: dataBRparaISO(get(["nascimento", "data de nasc"])),
-    endereco: get(["endereco", "endereco"]),
+    endereco: get(["endereco"]),
     historico: get(["historico", "medic", "atestado", "observ", "obs"]),
     responsavel: nomeResp || get(["responsavel"]),
     contatoEmergencia: get(["contato", "telefone", "whatsapp", "celular", "numero", "emergencia"]),

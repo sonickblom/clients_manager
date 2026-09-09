@@ -1,7 +1,4 @@
 // Regras: "Já Pagou" | "Aguardando" | "Pendente"
-// - Pagou se ultimoPagamento cai no mesmo mês/ano de hoje
-// - Senão: hoje <= vencimento do mês -> Aguardando, passou -> Pendente
-
 function diasNoMes(ano, mes0) {
   return new Date(ano, mes0 + 1, 0).getDate();
 }
@@ -16,7 +13,7 @@ function mesmoMes(iso, ref = new Date()) {
 function computeStatus(diaVencimento, ultimoPagamentoISO, hoje = new Date()) {
   if (mesmoMes(ultimoPagamentoISO, hoje)) return "Já Pagou";
   const dia = parseInt(diaVencimento, 10);
-  if (!dia || dia < 1) return "Aguardando"; // sem vencimento definido
+  if (!dia || dia < 1) return "Aguardando";
   const venc = Math.min(dia, diasNoMes(hoje.getFullYear(), hoje.getMonth()));
   return hoje.getDate() <= venc ? "Aguardando" : "Pendente";
 }
