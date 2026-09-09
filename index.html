@@ -109,19 +109,20 @@
   <label>Contato emergência</label><input id="fContato">
   <label>Endereço</label><input id="fEnd">
   <label>Histórico médico / observação</label><textarea id="fHist" rows="2"></textarea>
+  <div>
+    <label>Dias de treino (marque e confirme)</label>
+    <div id="diasCheck" class="dias-check">
+      <label class="dia-check"><input type="checkbox" value="Segunda"> Seg</label>
+      <label class="dia-check"><input type="checkbox" value="Terça"> Ter</label>
+      <label class="dia-check"><input type="checkbox" value="Quarta"> Qua</label>
+      <label class="dia-check"><input type="checkbox" value="Quinta"> Qui</label>
+      <label class="dia-check"><input type="checkbox" value="Sexta"> Sex</label>
+      <label class="dia-check"><input type="checkbox" value="Sábado"> Sáb</label>
+      <label class="dia-check"><input type="checkbox" value="Domingo"> Dom</label>
+    </div>
+  </div>
   <div class="linha">
-    <div>
-      <label>Dias de treino (marque e confirme)</label>
-      <div id="diasCheck" class="dias-check">
-        <label class="dia-check"><input type="checkbox" value="Segunda"> Seg</label>
-        <label class="dia-check"><input type="checkbox" value="Terça"> Ter</label>
-        <label class="dia-check"><input type="checkbox" value="Quarta"> Qua</label>
-        <label class="dia-check"><input type="checkbox" value="Quinta"> Qui</label>
-        <label class="dia-check"><input type="checkbox" value="Sexta"> Sex</label>
-        <label class="dia-check"><input type="checkbox" value="Sábado"> Sáb</label>
-        <label class="dia-check"><input type="checkbox" value="Domingo"> Dom</label>
-      </div>
-      <label>Turno</label>
+    <div><label>Turno</label>
       <select id="fTurno">
         <option>Tarde</option>
         <option>Manhã</option>

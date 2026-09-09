@@ -59,8 +59,9 @@ th { color:var(--mut); font-size:12px; text-transform:uppercase; }
 .dropdown button { background:none; border:0; border-radius:0; color:var(--txt);
   text-align:left; padding:10px 14px; width:100%; }
 .dropdown button:hover { background:var(--line); }
-.dias-check { display:flex; gap:6px; flex-wrap:wrap; margin:2px 0 4px; }
-.form label.dia-check { display:inline-flex; align-items:center; gap:5px; margin:0;
+.dias-check { display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; margin:2px 0 4px; }
+.form label.dia-check { display:flex; align-items:center; justify-content:center; gap:5px; margin:0;
   background:var(--input); border:1px solid var(--line); border-radius:8px;
-  padding:6px 10px; font-size:13px; color:var(--txt); cursor:pointer; }
+  padding:8px 4px; font-size:13px; color:var(--txt); cursor:pointer; }
 .form label.dia-check input[type="checkbox"] { width:auto; margin:0; }
+.form label.dia-check:has(input:checked) { border-color:#2f6df6; background:rgba(47,109,246,.18); }
