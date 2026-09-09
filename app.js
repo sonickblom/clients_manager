@@ -18,19 +18,8 @@ function mudarTema() {
   aplicarTema();
 }
 
-// ---- Login: digita o usuário; lista rápida só aparece com 2+ usuários ----
+// ---- Login: digita o usuário (sem lista de escolha) ----
 function popularUsuarios() {
-  const usuarios = loadUsuarios();
-  const grupo = document.getElementById("grupoEscolhaUsuario");
-  const sel = document.getElementById("escolhaUsuario");
-  if (usuarios.length > 1) {
-    grupo.style.display = "";
-    sel.innerHTML = `<option value="">Escolha...</option>` +
-      usuarios.map((u) => `<option value="${esc(u.nome)}">${esc(u.nome)}${u.ativo === false ? " (bloqueado)" : ""}</option>`).join("");
-    sel.value = "";
-  } else {
-    grupo.style.display = "none";
-  }
   document.getElementById("loginUsuario").value = "";
 }
 function entrar() {
@@ -40,7 +29,10 @@ function entrar() {
   const usuarios = loadUsuarios();
   const u = usuarios.find((x) => x.nome.toLowerCase() === nomeDigitado.toLowerCase());
   if (!u) return alert("Usuário não encontrado.");
-  if (u.ativo === false) return alert("Acesso bloqueado. Fale com o administrador.");
+  if (u.ativo === false) {
+    mostrarAviso("Seu acesso está bloqueado. Favor pagar a mensalidade para voltar a ter acesso.");
+    return;
+  }
   if (!u.senha) {
     if (senha.length < 4) return alert("Crie uma senha com 4+ dígitos.");
     u.senha = senha;
@@ -61,6 +53,12 @@ function logout() {
   document.getElementById("pinInput").type = "password";
   document.getElementById("telaPin").style.display = "flex";
   document.getElementById("dropdown").style.display = "none";
+}
+
+// ---- Aviso interno (popup com botão Entendi) ----
+function mostrarAviso(mensagem) {
+  document.getElementById("avisoMsg").textContent = mensagem;
+  abrirModal("modalAviso");
 }
 
 // ---- Gerenciar usuários (somente admin) ----

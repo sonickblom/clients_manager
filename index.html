@@ -10,10 +10,6 @@
 <div id="telaPin">
   <div class="form">
     <h2>Clients Manager</h2>
-    <div id="grupoEscolhaUsuario" style="display:none;">
-      <label>Acesso rápido</label>
-      <select id="escolhaUsuario" onchange="document.getElementById('loginUsuario').value = this.value"></select>
-    </div>
     <label>Usuário</label>
     <input id="loginUsuario" placeholder="Digite seu usuário" autocomplete="username">
     <label>Senha</label>
@@ -184,6 +180,14 @@
   <div class="linha">
     <button class="danger" onclick="cliqueSim()">Sim</button>
     <button class="sec" onclick="cliqueNao()">Não</button>
+  </div>
+</div></div>
+
+<div class="modal" id="modalAviso"><div class="form" style="width:360px;">
+  <h3>Acesso bloqueado</h3>
+  <p id="avisoMsg" style="margin:12px 0;"></p>
+  <div class="linha">
+    <button onclick="fecharModal('modalAviso')">Entendi</button>
   </div>
 </div></div>
 
