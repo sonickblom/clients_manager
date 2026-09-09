@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZPersonal Manager</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="telaPin">
+  <div class="form">
+    <h2>ZPersonal Manager</h2>
+    <label>PIN de acesso</label>
+    <input type="password" id="pinInput" placeholder="Digite ou crie seu PIN">
+    <br><br><button onclick="entrar()">Entrar</button>
+  </div>
+</div>
+
+<header>
+  <h1>ZPersonal Manager</h1>
+  <button class="sec" onclick="exportarBackup(db)">Backup</button>
+  <button class="sec" onclick="document.getElementById('impBackup').click()">Restaurar</button>
+  <input type="file" id="impBackup" accept=".json" hidden>
+</header>
+
+<main>
+  <div class="toolbar">
+    <button class="sec" id="btnFiltro" onclick="abrirPainelFiltro()" title="Filtros e busca">
+      <span class="icon-filtro">▤</span> Filtros
+    </button>
+    <button onclick="abrirForm()">+ Aluno</button>
+    <button class="sec" onclick="abrirModal('modalImp')">Importar planilha</button>
+    <button class="sec" onclick="carregarDemo()">Demo</button>
+  </div>
+
+  <div id="painelFiltro" style="display:none; background:var(--card); padding:12px; border-radius:12px; margin-bottom:12px;">
+    <div class="toolbar">
+      <input id="busca" placeholder="Buscar nome ou responsável..." oninput="buscaDigitada()">
+      <select id="filtroStatus">
+        <option value="">Todos os status</option>
+        <option>Já Pagou</option><option>Aguardando</option><option>Pendente</option>
+      </select>
+      <select id="filtroOrdem">
+        <option value="AZ">A-Z</option>
+        <option value="ZA">Z-A</option>
+        <option value="novos">Mais novos</option>
+        <option value="antigos">Mais antigos</option>
+      </select>
+      <select id="filtroTurno">
+        <option value="">Todos os turnos</option>
+        <option>Manhã</option><option>Tarde</option>
+      </select>
+      <select id="filtroIdade">
+        <option value="">Todas as idades</option>
+        <option value="at6">Até 6 anos</option>
+        <option value="7a9">7 a 9 anos</option>
+        <option value="10a12">10 a 12 anos</option>
+        <option value="13mais">13+ anos</option>
+      </select>
+      <select id="filtroMatricula">
+        <option value="">Todas matrículas</option>
+        <option>Aguardando</option><option>Válido</option><option>Cancelado</option>
+      </select>
+    </div>
+    <div class="toolbar" style="margin-bottom:0;">
+      <button onclick="aplicarFiltros()">Aplicar</button>
+      <button class="sec" onclick="limparFiltros()">Limpar</button>
+      <span id="contador" style="align-self:center; color:var(--mut); margin-left:auto;"></span>
+    </div>
+  </div>
+
+  <table><thead><tr>
+    <th>Aluno</th><th>Responsável</th><th>Treino</th>
+    <th>Data da mensalidade</th><th>Mensalidade</th><th>Matrícula</th><th></th>
+  </tr></thead><tbody id="lista"></tbody></table>
+</main>
+
+<div class="modal" id="modalForm"><div class="form">
+  <h3 id="formTitulo">Aluno</h3>
+  <input type="hidden" id="fId">
+  <label>Nome completo</label><input id="fNome">
+  <div class="linha">
+    <div><label>Nascimento</label><input type="date" id="fNasc"></div>
+    <div><label>Data da mensalidade (dia do mês, 1-31)</label><input type="number" id="fVenc" min="1" max="31"></div>
+  </div>
+  <label>Responsável</label><input id="fResp">
+  <label>Contato emergência</label><input id="fContato">
+  <label>Endereço</label><input id="fEnd">
+  <label>Histórico médico / observação</label><textarea id="fHist" rows="2"></textarea>
+  <div class="linha">
+    <div><label>Dias de treino</label><select id="fTreino">
+      <option>Segunda e Sexta ( Tarde )</option><option>Segunda - Tarde</option>
+      <option>Segunda - Manhã</option><option>Quarta - Tarde</option><option>Outro</option>
+    </select></div>
+    <div><label>Matrícula</label><select id="fMat">
+      <option>Aguardando</option><option>Válido</option><option>Cancelado</option>
+    </select></div>
+  </div>
+  <div class="linha">
+    <div id="grupoPag" style="display:none;"><label>Último pagamento</label><input type="date" id="fPag"></div>
+    <div><label>Direito de uso de imagem</label><select id="fImg">
+      <option value="autorizado">Autorizado</option>
+      <option value="nao">Não autorizado</option>
+      <option value="na" selected>N/A</option>
+    </select></div>
+  </div>
+  <br><div class="linha">
+    <button onclick="salvarForm()">Salvar</button>
+    <button class="sec" onclick="marcarPagoHoje()">Pago hoje</button>
+    <button class="sec" onclick="fecharModal('modalForm')">Fechar</button>
+  </div>
+  <div id="grupoRemover" style="display:none; margin-top:12px;">
+    <button class="danger" onclick="remover(editando)">Remover aluno</button>
+  </div>
+</div></div>
+
+<div class="modal" id="modalImp"><div class="form">
+  <h3>Importar da planilha</h3>
+  <label>Colar link do CSV publicado</label>
+  <input id="impLink" placeholder="https://docs.google.com/...output=csv">
+  <br><br><button onclick="importarLink()">Puxar do link</button>
+  <hr><label>Ou enviar arquivo CSV</label>
+  <input type="file" id="impCSV" accept=".csv">
+  <br><br><button class="sec" onclick="fecharModal('modalImp')">Fechar</button>
+</div></div>
+
+<script src="status.js"></script>
+<script src="storage.js"></script>
+<script src="import.js"></script>
+<script src="dados-exemplo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
