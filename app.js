@@ -3,6 +3,8 @@ let usuarioAtual = null;
 let editando = null;
 let filtrosAplicados = {};
 
+const DIAS_SEMANA = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+
 // ---- Tema (claro ☀️ / escuro 🌙), lembrado entre sessões ----
 function aplicarTema() {
   const t = localStorage.getItem("clients_theme") || "dark";
@@ -59,6 +61,39 @@ function logout() {
 function mostrarAviso(mensagem) {
   document.getElementById("avisoMsg").textContent = mensagem;
   abrirModal("modalAviso");
+}
+
+// ---- Dias de treino: caixas de seleção + turno ----
+function parseTreino(valor) {
+  const res = { dias: [], turno: "Tarde" };
+  if (!valor) return res;
+  const n = " " + norm(valor) + " ";
+  [["segunda", "Segunda"], ["terca", "Terça"], ["quarta", "Quarta"], ["quinta", "Quinta"],
+   ["sexta", "Sexta"], ["sabado", "Sábado"], ["domingo", "Domingo"]].forEach(([chave, nome]) => {
+    if (n.includes(chave)) res.dias.push(nome);
+  });
+  if (n.includes("manha")) res.turno = "Manhã";
+  else if (n.includes("noite")) res.turno = "Noite";
+  else if (n.includes("tarde")) res.turno = "Tarde";
+  return res;
+}
+function comporTreino(dias, turno) {
+  if (!dias.length) return "";
+  if (dias.length === 1) return `${dias[0]} - ${turno}`;
+  return `${dias.slice(0, -1).join(", ")} e ${dias[dias.length - 1]} ( ${turno} )`;
+}
+function lerTreinoForm() {
+  const dias = [...document.querySelectorAll("#diasCheck input[type=checkbox]:checked")]
+    .map((cb) => cb.value)
+    .sort((a, b) => DIAS_SEMANA.indexOf(a) - DIAS_SEMANA.indexOf(b));
+  return comporTreino(dias, document.getElementById("fTurno").value);
+}
+function marcarTreinoForm(valor) {
+  const t = parseTreino(valor);
+  document.querySelectorAll("#diasCheck input[type=checkbox]").forEach((cb) => {
+    cb.checked = t.dias.includes(cb.value);
+  });
+  document.getElementById("fTurno").value = t.turno;
 }
 
 // ---- Gerenciar usuários (somente admin) ----
@@ -292,7 +327,8 @@ function abrirForm(id) {
   fId.value = a.id || ""; fNome.value = a.nome || ""; fNasc.value = a.nascimento || "";
   fVenc.value = a.diaVencimento || ""; fResp.value = a.responsavel || "";
   fContato.value = a.contatoEmergencia || ""; fEnd.value = a.endereco || "";
-  fHist.value = a.historico || ""; fTreino.value = a.diasTreino || "Segunda e Sexta ( Tarde )";
+  fHist.value = a.historico || "";
+  marcarTreinoForm(a.diasTreino || "");
   fMat.value = a.statusMatricula || "Aguardando";
   fPag.value = a.ultimoPagamento || "";
   fImg.value = a.autorizacaoImagem || "na";
@@ -310,7 +346,7 @@ function lerForm() {
     diaVencimento: fVenc.value ? parseInt(fVenc.value, 10) : null,
     responsavel: fResp.value.trim(), contatoEmergencia: fContato.value.trim(),
     endereco: fEnd.value.trim(), historico: fHist.value.trim(),
-    diasTreino: fTreino.value, statusMatricula: fMat.value,
+    diasTreino: lerTreinoForm(), statusMatricula: fMat.value,
     ultimoPagamento: fPag.value || null, autorizacaoImagem: fImg.value,
   };
 }
@@ -318,11 +354,15 @@ function lerForm() {
 function salvarForm() {
   const d = lerForm();
   if (!d.nome) return alert("Nome é obrigatório.");
+  if (!d.diasTreino) return alert("Selecione ao menos um dia de treino.");
   if (editando) {
     const a = db.alunos.find((x) => x.id === editando);
-    delete d.ultimoPagamento;
-    Object.assign(a, { ...d, ultimoPagamento: a.ultimoPagamento });
-  } else db.alunos.push(novoAluno({ ...d, historicoPagamentos: [] }));
+    const pagamentoMudou = (d.ultimoPagamento || null) !== (a.ultimoPagamento || null);
+    Object.assign(a, d);
+    if (pagamentoMudou && d.ultimoPagamento) {
+      a.historicoPagamentos.push({ data: d.ultimoPagamento, referencia: d.ultimoPagamento.slice(0, 7) });
+    }
+  } else db.alunos.push(novoAluno({ ...d, ultimoPagamento: null, historicoPagamentos: [] }));
   saveDB(db); fecharModal("modalForm"); render();
 }
 
